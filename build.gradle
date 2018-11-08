@@ -10,6 +10,7 @@ buildscript {
         classpath 'org.asciidoctor:asciidoctorj-epub3:1.5.0-alpha.7'
         classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.16'
         classpath 'org.jruby:jruby-complete:9.1.12.0'
+        classpath "com.github.jruby-gradle:jruby-gradle-plugin:0.1.5"
     }
 }
 
@@ -21,11 +22,33 @@ apply plugin: 'java'
 apply plugin: 'org.asciidoctor.convert'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'com.bluepapa32.watch'
+apply plugin: 'com.github.jruby-gradle.base'
 
 version = '4.1.0-SNAPSHOT'
 
+dependencies {
+    gems 'rubygems:asciidoctor-diagram:1.5.11'
+}
+
 asciidoctorj {
     version = '1.5.7'
+}
+
+asciidoctor {
+    // jrubyPrepareGems task is added by the JRuby
+    // plugin and will download Ruby gems we have
+    // defined in the gems dependency configuration.
+    dependsOn jrubyPrepareGems
+
+    // Asciidoctor task needs the
+    // asciidoctor-diagram gem, we installed
+    // with the jrubyPrepareGems task and
+    // gems dependency configuration.
+    requires = ['asciidoctor-diagram']
+
+    // Set path to find gems to directory
+    // used by jrubyPrepareGems task.
+    gemPath = jrubyPrepareGems.outputDir
 }
 
 import org.asciidoctor.gradle.AsciidoctorTask
@@ -50,6 +73,9 @@ tasks.withType(AsciidoctorTask) { task ->
 }
 
 task html(type: AsciidoctorTask, description: 'Generates single page HTML') {
+    dependsOn jrubyPrepareGems
+    requires = ['asciidoctor-diagram']
+    gemPath = jrubyPrepareGems.outputDir
     backends 'html5'
 }
 
@@ -65,12 +91,20 @@ task prepress(type: AsciidoctorTask, description: 'Generates PDF for prepress pr
 
 // NOTE please use ./generate-pdf.sh screen instead of this task for now
 task pdf(type: AsciidoctorTask, description: 'Generates PDF') {
-    attributes attrs + ['pdfmarks': '']
+    dependsOn jrubyPrepareGems
+    requires = ['asciidoctor-diagram']
+    gemPath = jrubyPrepareGems.outputDir
+
+    attributes attrs + ['pdfmarks': ''] + ['imagesdir':"$buildDir/asciidoc/html5/images"]
     requires file('src/main/ruby/asciidoctor-pdf-extensions.rb')
     backends 'pdf'
 }
 
 task epub(type: AsciidoctorTask, description: 'Generates EPUB3') {
+//    dependsOn jrubyPrepareGems
+//    requires = ['asciidoctor-diagram']
+//    gemPath = jrubyPrepareGems.outputDir
+
     backends 'epub3'
 }
 
@@ -105,8 +139,8 @@ mobi.dependsOn extractKindlegen
 pdf.shouldRunAfter html
 epub.shouldRunAfter pdf
 
-//task all(dependsOn: ['html', 'pdf', 'epub', 'mobi'])
-task all(dependsOn: ['html', 'epub', 'mobi'])
+task all(dependsOn: ['html', 'pdf', 'epub', 'mobi'])
+//task all(dependsOn: ['html', 'epub', 'mobi'])
 
 defaultTasks 'all'
 

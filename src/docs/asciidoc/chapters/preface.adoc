@@ -87,6 +87,53 @@ Finally, this text shows what a quote looks like:
 "In the end, it's not the years in your life that count. It's the life in your years."
 -- Abraham Lincoln
 
+.ditaa graphics
+[ditaa]
+----
+                   +-------------+
+                   | Asciidoctor |-------+
+                   |  Diagram    |       |
+                   +-------------+       | PNG out
+                       ^                 |
+                       | ditaa in        |
+                       |                 v
+ +--------+   +--------+----+    /----------------\
+ |        | --+ Asciidoctor +--> |                |
+ |  Text  |   +-------------+    |Beautiful output|
+ |Document|   |   !magic!   |    |                |
+ |     {d}|   |             |    |                |
+ +---+----+   +-------------+    \----------------/
+     :                                   ^
+     |          Lots of work             |
+     +-----------------------------------+
+----
+
+.The PlantUML block extension class
+[plantuml, sample-plantuml-diagram, alt="Class diagram", width=135, height=118]
+----
+class BlockProcessor
+class PlantUmlBlock
+BlockProcessor <|-- PlantUmlBlock
+----
+
+.The PlantUML block extension class
+[plantuml, width=300, height=118]
+----
+@startuml
+actor Foo1
+boundary Foo2
+control Foo3
+entity Foo4
+database Foo5
+collections Foo6
+Foo1 -> Foo2 : To boundary
+Foo1 -> Foo3 : To control
+Foo1 -> Foo4 : To entity
+Foo1 -> Foo5 : To database
+Foo1 -> Foo6 : To collections
+@enduml
+----
+
 == Reader feedback
 
 We always welcome feedback from our readers. Let us know what you thought about this book — what you liked or disliked. Reader feedback helps us develop titles that deliver the most value to you.
