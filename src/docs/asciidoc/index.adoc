@@ -12,7 +12,10 @@
 ifeval::["{media}" != "prepress"]
 :front-cover-image: image:cover.png[Front Cover,1050,1600]
 endif::[]
+:sectnums:
 :toc:
+:toclevels: 3
+:toc-title: 目录
 :icons: font
 :lang: en
 :language: javadocript
@@ -21,7 +24,7 @@ endif::[]
 :pdf-stylesdir: ./styles/pdf
 :pdf-style: infoq-screen
 ifndef::ebook-format[:leveloffset: 1]
-= {title}
+//= {title}
 
 [colophon#colophon%nonfacing]
 include::chapters/colophon.adoc[]
